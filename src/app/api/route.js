@@ -50,3 +50,18 @@ export const PATCH = async(req) => {
         return NextResponse.json(error)
     }
 }
+
+export const DELETE = async(req) => {
+    const body = await req.json()
+    try {
+        const { data } = await axios.post(`${process.env.BASE_URL}/deleteMany`, body, {
+            headers: {
+                'Content-Type': 'application/json',
+                'api-key': process.env.API_DB
+            }
+        })
+        return NextResponse.json(data)
+    } catch (error) {
+        return NextResponse.json(error)
+    }
+}
