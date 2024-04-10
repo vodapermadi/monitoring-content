@@ -17,8 +17,8 @@ export default function RootLayout({ children }) {
           <Link className="p-1 bg-gray-400 rounded" href={'/'}>
             <span>Home </span>
           </Link>
-          <Link className="p-1 bg-gray-400 rounded" href={'/email'}>
-            <span>Email </span>
+          <Link className="p-1 bg-gray-400 rounded" href={'/reset'}>
+            <span>Menu Reset</span>
           </Link>
           <Link className="p-1 bg-gray-400 rounded" href={'/keylist'}>
             <span>Generate Keyword</span>

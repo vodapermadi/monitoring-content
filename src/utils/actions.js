@@ -7,8 +7,12 @@ axios.create({
     }
 })
 
-export const generateWordList = () => {
-    // 
+export const shuffleArray = (array) => {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
 }
 
 export const factorial = (n) => {
@@ -21,19 +25,6 @@ export const factorial = (n) => {
         result *= i;
     }
     return result;
-}
-
-export const generate = (words, result, prefix = []) => {
-    if (prefix.length === words.length) {
-        result.push(prefix.join(' '));
-        return;
-    }
-
-    for (let i = 0; i < words.length; i++) {
-        let newPrefix = prefix.concat(words[i]);
-        let newRemaining = words.slice(0, i).concat(words.slice(i + 1));
-        generate(newRemaining, result, newPrefix);
-    }
 }
 
 export const getData = async (collection,filter=undefined) => {
@@ -84,6 +75,39 @@ export const postData = async(collection,value) => {
     return data
 }
 
+export const postMany = async (collection, value) => {
+    // let val = {
+    //     ...value,
+    //     update_at: {
+    //         $timestamp: {
+    //             "t": Number(Math.floor(Date.now() / 1000)),
+    //             "i": 1
+    //         }
+    //     },
+    //     created_at: {
+    //         $timestamp: {
+    //             "t": Number(Math.floor(Date.now() / 1000)),
+    //             "i": 1
+    //         }
+    //     }
+    // }
+
+    let body = {
+        collection: collection,
+        database: "develop",
+        // database: 'Tiktok',
+        dataSource: "Cluster0",
+    }
+
+    body = {
+        ...body,
+        documents: value
+    }
+
+    const { data } = await axios.post("/api/manyReq", JSON.stringify(body))
+    return data
+}
+
 export const updateData = async(collection,filter,value) => {
     let val = {
         ...value,
@@ -126,6 +150,6 @@ export const deleteData = async(collection,filter) => {
         filter:filter,
     }
 
-    const { data } = await axios.delete("/api", JSON.stringify(body))
+    const { data } = await axios.patch("/api/manyReq", JSON.stringify(body))
     return data
 }

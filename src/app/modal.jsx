@@ -1,5 +1,5 @@
 "use client"
-import { deleteData, generate, getData, postData, updateData } from '@/utils/actions'
+import { deleteData, generate, getData, postData, postMany, shuffleArray, updateData } from '@/utils/actions'
 import React, { useEffect, useState } from 'react'
 
 const ModalForm = ({ setIp, setPopUp, ip, device }) => {
@@ -78,8 +78,11 @@ const ModalForm = ({ setIp, setPopUp, ip, device }) => {
     const handleWordList = async (e) => {
         e.preventDefault()
         setLoading(true)
-        deleteData({'ip_address':ip,'status':false})
-        let word = keyword.slice(0, 6).map(val => val.keyword);
+        
+        deleteData('data',{'ip_address':ip,'status':false})
+
+        let word = shuffleArray(keyword).slice(0, 7).map(val => val.keyword)
+
         let sentence = []
 
         function generateCombinations(prefix, remainingWords) {
@@ -87,7 +90,7 @@ const ModalForm = ({ setIp, setPopUp, ip, device }) => {
                 sentence.push(prefix.join(' '))
                 return
             }
-            
+
             for (let i = 0; i < remainingWords.length; i++) {
                 let newPrefix = prefix.concat(remainingWords[i]);
                 let newRemaining = remainingWords.slice(0, i).concat(remainingWords.slice(i + 1));
@@ -96,14 +99,6 @@ const ModalForm = ({ setIp, setPopUp, ip, device }) => {
         }
 
         generateCombinations([], word)
-
-        const shuffleArray = (array) => {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
 
         const result = shuffleArray(sentence)
 
@@ -114,23 +109,34 @@ const ModalForm = ({ setIp, setPopUp, ip, device }) => {
                 status: true,
                 use_ip: "",
                 type: "word_list",
-                text: result[i]
+                text: result[i],
+                update_at: {
+                        $timestamp: {
+                            "t": Number(Math.floor(Date.now() / 1000)),
+                            "i": 1
+                        }
+                    },
+                    created_at: {
+                        $timestamp: {
+                            "t": Number(Math.floor(Date.now() / 1000)),
+                            "i": 1
+                        }
+                    }
             })
         }
-        if((result.length + word.length) < 1000){
+        
+        if (arrVal.length > 0 && (arrVal.length + (limit / 6  / content[0].limit)) < 1000) {
             try {
                 await updateData('device', { ip_address: ip }, kernel)
-    
-                for (let i = 0; i < arrVal.length; i++) {
-                    await postData('data', arrVal[i]);
-                }
-    
+
+                await postMany('data',arrVal)
+
                 for (let i = 0; i < content.length; i++) {
                     await postData('data', content[i]);
                 }
-    
-                window.alert(`keyword = ${word.length}, wordlist = ${result.length}, jumlah = ${result.length + word.length}`)
-    
+
+                window.alert(`keyword = ${limit / 6 / content[0].limit}, wordlist = ${arrVal.length}, jumlah = ${arrVal.length + (limit / 6 / content[0].limit)}`)
+                
                 setIp("")
                 setPopUp(false)
                 setContent([])
@@ -140,9 +146,11 @@ const ModalForm = ({ setIp, setPopUp, ip, device }) => {
                     window.location.reload()
                 }, 800)
             } catch (error) {
+                console.log(error)
                 window.alert("gagal upload")
             }
-        }else{
+
+        } else {
             window.alert('data over')
 
             setIp("")
@@ -150,7 +158,7 @@ const ModalForm = ({ setIp, setPopUp, ip, device }) => {
             setContent([])
             setKernel([])
             setLoading(false)
-            
+
             setTimeout(() => {
                 window.location.reload()
             }, 800)
@@ -170,20 +178,6 @@ const ModalForm = ({ setIp, setPopUp, ip, device }) => {
                         </div>
                         <h1 className="w-full text-center font-semibold text-xl">Kernel Setting</h1>
                         <form className='grid md:grid-cols-2 grid-cols-1 gap-3 place-items-start' onSubmit={handleKernel}>
-                            {/* <div className='flex flex-col items-start justify-center w-full gap-1'>
-                                <label htmlFor="thread">Fingerprint Key</label>
-                                <input type="text" name='fingerprint_key' className='focus:outline-none w-full py-1 px-3 rounded border border-blue-400' required />
-                            </div>
-
-                            <div className='flex flex-col items-start justify-center w-full'>
-                                <label htmlFor="captha_key">Captha Key</label>
-                                <input type="text" name='captha_key' className='focus:outline-none w-full py-1 px-3 rounded border border-blue-400' required />
-                            </div>
-                            
-                            <div className='flex flex-col items-start justify-center w-full'>
-                                <label htmlFor="report_interval">Cluster Size </label>
-                                <input type="number" min={1} name='cluster' className='focus:outline-none w-full py-1 px-3 rounded border border-blue-400' required />
-                            </div> */}
 
                             <div className='flex flex-col items-start justify-center w-full'>
                                 <label htmlFor="report_interval">Report Interval /detik</label>
@@ -287,16 +281,15 @@ const ModalForm = ({ setIp, setPopUp, ip, device }) => {
                         </>
                     ) : (
                         <>
-                            <h1 className="w-full text-center font-semibold text-xl">Word List</h1>
+                            <h1 className="w-full text-center font-semibold text-xl">Generate WordList</h1>
                             <div className='w-full flex justify-center items-center gap-2 flex-wrap'>
                                 <form className='grid grid-cols-1 gap-3 place-items-start' onSubmit={handleWordList}>
-                                    {/* <div className='flex flex-col items-start justify-center w-full gap-1'>
-                                        <label htmlFor="thread">Text</label>
-                                        <textarea name='text' className='focus:outline-none w-full py-1 px-3 rounded border border-blue-400' cols={30} rows={10} required></textarea>
-                                    </div> */}
-                                    {!loading && (
                                         <button className='py-1 px-3 md:col-span-2 col-span-1 w-full bg-blue-600 font-semibold text-lg text-white rounded-lg' type='submit'>Next</button>
-                                    )}
+                                    {/* {!loading ? (
+                                        <button className='py-1 px-3 md:col-span-2 col-span-1 w-full bg-blue-600 font-semibold text-lg text-white rounded-lg' type='submit'>Next</button>
+                                    ) : (
+                                        <div>Generate Proses</div>
+                                    )} */}
                                 </form>
                             </div>
                         </>
