@@ -1,5 +1,5 @@
 "use client"
-import { deleteData, generate, getData, postData, postMany, shuffleArray, updateData } from '@/utils/actions'
+import { deleteData, generate, getData, postData, postMany, shuffleArray, splitArray, updateData } from '@/utils/actions'
 import React, { useEffect, useState } from 'react'
 
 const ModalForm = ({ setIp, setPopUp, ip, device }) => {
@@ -20,23 +20,17 @@ const ModalForm = ({ setIp, setPopUp, ip, device }) => {
         const formData = new FormData(e.target);
 
         // declare value name
-
-        // const fingerprint = formData.get('fingerprint_key')
-        // const captha = formData.get('captha_key')
         const report = parseInt(formData.get('report_interval'))
         const notif = parseInt(formData.get('notif'))
         const account = parseInt(formData.get('account'))
         const content = parseInt(formData.get('content'))
-        const cluster = parseInt(formData.get('cluster'))
 
         await getData('device', { ip_address: ip }).then((data) => {
             let oldData = data[0]
-            // setIp()
             delete oldData._id
+
             setKernel({
                 ...oldData,
-                // fingerprint_key: fingerprint,
-                // captha_key: captha,
                 report_interval: report <= 0 ? 1 : report,
                 report_on_value: notif > 100 ? 100 : notif,
                 thread: {
@@ -101,7 +95,7 @@ const ModalForm = ({ setIp, setPopUp, ip, device }) => {
         generateCombinations([], word)
 
         const result = shuffleArray(sentence)
-
+        const getTime = Number(Math.floor(Date.now() / 1000))
         let arrVal = []
         for (let i = 0; i < limit; i++) {
             arrVal.push({
@@ -112,39 +106,45 @@ const ModalForm = ({ setIp, setPopUp, ip, device }) => {
                 text: result[i],
                 update_at: {
                         $timestamp: {
-                            "t": Number(Math.floor(Date.now() / 1000)),
+                            "t": getTime + i,
                             "i": 1
                         }
                     },
                     created_at: {
                         $timestamp: {
-                            "t": Number(Math.floor(Date.now() / 1000)),
+                            "t": getTime + i,
                             "i": 1
                         }
                     }
             })
         }
         
+        const splitContent = splitArray(content, Number(kernel.thread.content))
+        const splitWordlist = splitArray(arrVal, Math.ceil(arrVal.length / splitContent.length))
+
         if (arrVal.length > 0 && (arrVal.length + (limit / 6  / content[0].limit)) < 1000) {
             try {
+                // update kernel settings
                 await updateData('device', { ip_address: ip }, kernel)
 
-                await postMany('data',arrVal)
-
-                for (let i = 0; i < content.length; i++) {
-                    await postData('data', content[i]);
+                for(let i = 0; i < splitContent.length; i++) {
+                    // post multiple content
+                    await postMany('data', splitContent[i]).then(() => {
+                        console.log("keyword")
+                    })
+                    // post data to mongodb
+                    await postMany('data',splitWordlist[i]).then(() => {
+                        console.log("wordlist")
+                    })
                 }
 
+                // alert for sum of data successfully
                 window.alert(`keyword = ${limit / 6 / content[0].limit}, wordlist = ${arrVal.length}, jumlah = ${arrVal.length + (limit / 6 / content[0].limit)}`)
                 
-                setIp("")
-                setPopUp(false)
-                setContent([])
-                setKernel([])
-                setLoading(false)
                 setTimeout(() => {
                     window.location.reload()
                 }, 800)
+
             } catch (error) {
                 console.log(error)
                 window.alert("gagal upload")
@@ -152,12 +152,6 @@ const ModalForm = ({ setIp, setPopUp, ip, device }) => {
 
         } else {
             window.alert('data over')
-
-            setIp("")
-            setPopUp(false)
-            setContent([])
-            setKernel([])
-            setLoading(false)
 
             setTimeout(() => {
                 window.location.reload()
@@ -284,12 +278,12 @@ const ModalForm = ({ setIp, setPopUp, ip, device }) => {
                             <h1 className="w-full text-center font-semibold text-xl">Generate WordList</h1>
                             <div className='w-full flex justify-center items-center gap-2 flex-wrap'>
                                 <form className='grid grid-cols-1 gap-3 place-items-start' onSubmit={handleWordList}>
-                                        <button className='py-1 px-3 md:col-span-2 col-span-1 w-full bg-blue-600 font-semibold text-lg text-white rounded-lg' type='submit'>Next</button>
-                                    {/* {!loading ? (
+                                        {/* <button className='py-1 px-3 md:col-span-2 col-span-1 w-full bg-blue-600 font-semibold text-lg text-white rounded-lg' type='submit'>Next</button> */}
+                                    {!loading ? (
                                         <button className='py-1 px-3 md:col-span-2 col-span-1 w-full bg-blue-600 font-semibold text-lg text-white rounded-lg' type='submit'>Next</button>
                                     ) : (
                                         <div>Generate Proses</div>
-                                    )} */}
+                                    )}
                                 </form>
                             </div>
                         </>
