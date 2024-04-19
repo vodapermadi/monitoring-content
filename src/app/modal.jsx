@@ -1,5 +1,5 @@
 "use client"
-import { deleteData, generate, getData, postData, postMany, shuffleArray, splitArray, updateData } from '@/utils/actions'
+import { getData, postMany, shuffleArray, splitArray, updateData, wordRandom } from '@/utils/actions'
 import React, { useEffect, useState } from 'react'
 
 const ModalForm = ({ setIp, setPopUp, ip, device }) => {
@@ -73,10 +73,9 @@ const ModalForm = ({ setIp, setPopUp, ip, device }) => {
         e.preventDefault()
         setLoading(true)
         
-        deleteData('data',{'ip_address':ip,'status':false})
+        // deleteData('data',{'ip_address':ip,'status':false})
 
-        let word = shuffleArray(keyword).slice(0, 7).map(val => val.keyword)
-
+        let word = shuffleArray(wordRandom).slice(0, 8)
         let sentence = []
 
         function generateCombinations(prefix, remainingWords) {
@@ -97,7 +96,8 @@ const ModalForm = ({ setIp, setPopUp, ip, device }) => {
         const result = shuffleArray(sentence)
         const getTime = Number(Math.floor(Date.now() / 1000))
         let arrVal = []
-        for (let i = 0; i < limit; i++) {
+        for (let i = 0; i < limit * 2; i++) {
+            console.log("insert to array : " + (i+1))
             arrVal.push({
                 ip_address: ip,
                 status: true,
@@ -122,7 +122,7 @@ const ModalForm = ({ setIp, setPopUp, ip, device }) => {
         const splitContent = splitArray(content, Number(kernel.thread.content))
         const splitWordlist = splitArray(arrVal, Math.ceil(arrVal.length / splitContent.length))
 
-        if (arrVal.length > 0 && (arrVal.length + (limit / 6  / content[0].limit)) < 1000) {
+        if (arrVal.length > 0 && (splitWordlist[0].length + (limit / 6  / content[0].limit)) < 1000) {
             try {
                 // update kernel settings
                 await updateData('device', { ip_address: ip }, kernel)

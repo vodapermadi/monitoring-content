@@ -790,6 +790,11 @@ function-bind@^1.1.2:
   resolved "https://registry.yarnpkg.com/function-bind/-/function-bind-1.1.2.tgz#2c02d864d97f3ea6c8830c464cbd11ab6eab7a1c"
   integrity sha512-7XHNxH7qX9xG5mIwxkhumTox/MIRNcOgDrxWsMt2pAr23WHp6MrRlN7FBSFpCpr+oVO0F744iUgR82nJMfG2SA==
 
+get-browser-fingerprint@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/get-browser-fingerprint/-/get-browser-fingerprint-3.2.0.tgz#b45e16e6185bd07d371a25a8e9fcea15efb0ec44"
+  integrity sha512-EUDjS8nxSGI6ogbGFNkUMCp8bWQKk0Qt7kWVR6Q4aLi6uBuJt3PgqaD2qC0EhgA3GMJF6KNX83uGVUwGpxziNQ==
+
 get-caller-file@^2.0.5:
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/get-caller-file/-/get-caller-file-2.0.5.tgz#4f94412a82db32f36e3b0b9741f8a97feb031f7e"

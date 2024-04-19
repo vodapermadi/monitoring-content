@@ -9,6 +9,19 @@ axios.create({
 
 const db = "Tiktok"
 
+export const wordRandom = [
+    "Delicious",
+    "Tempting",
+    "Savory",
+    "Fresh",
+    "Appetizing",
+    "Mouthwatering",
+    "Flavorful",
+    "Diverse",
+    "Aromatic",
+    "Satisfying"
+]
+
 export const splitArray = (array, chunkSize) => {
     const result = [];
     for (let i = 0; i < array.length; i += chunkSize) {
@@ -24,18 +37,6 @@ export const shuffleArray = (array) => {
         [array[i], array[j]] = [array[j], array[i]];
     }
     return array;
-}
-
-export const factorial = (n) => {
-    if (n === 0 || n === 1) {
-        return 1;
-    }
-
-    let result = 1;
-    for (let i = 2; i <= n; i++) {
-        result *= i;
-    }
-    return result;
 }
 
 export const getData = async (collection,filter=undefined) => {
