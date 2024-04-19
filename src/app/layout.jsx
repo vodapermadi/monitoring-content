@@ -21,7 +21,7 @@ export default function RootLayout({ children }) {
             <span>Menu Reset</span>
           </Link>
           <Link className="p-1 bg-gray-400 rounded" href={'/keylist'}>
-            <span>Generate Keyword</span>
+            <span>Add Email</span>
           </Link>
         </nav>
         {children}
