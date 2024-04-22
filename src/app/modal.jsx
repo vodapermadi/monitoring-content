@@ -8,13 +8,19 @@ const ModalForm = ({ setIp, setPopUp, ip, device }) => {
     const [keyword, setKeyword] = useState([])
     const [limit, setLimit] = useState(0)
     const [loading, setLoading] = useState(false)
+    const [tag,setTag] = useState([])
 
     useEffect(() => {
         getData('keyword').then(data => {
             setKeyword(data)
         })
-    }, [])
 
+        getData('tag').then((data) => {
+            setTag(data)
+        })
+    }, [])
+    
+    
     const handleKernel = async (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);
@@ -28,7 +34,6 @@ const ModalForm = ({ setIp, setPopUp, ip, device }) => {
         await getData('device', { ip_address: ip }).then((data) => {
             let oldData = data[0]
             delete oldData._id
-
             setKernel({
                 ...oldData,
                 report_interval: report <= 0 ? 1 : report,
@@ -66,14 +71,13 @@ const ModalForm = ({ setIp, setPopUp, ip, device }) => {
                 status: true
             })
         }
+
         setContent(output)
     }
 
     const handleWordList = async (e) => {
         e.preventDefault()
         setLoading(true)
-        
-        // deleteData('data',{'ip_address':ip,'status':false})
 
         let word = shuffleArray(wordRandom).slice(0, 8)
         let sentence = []
@@ -96,14 +100,13 @@ const ModalForm = ({ setIp, setPopUp, ip, device }) => {
         const result = shuffleArray(sentence)
         const getTime = Number(Math.floor(Date.now() / 1000))
         let arrVal = []
-        for (let i = 0; i < limit * 2; i++) {
-            console.log("insert to array : " + (i+1))
+        for (let i = 0; i < limit; i++) {
             arrVal.push({
                 ip_address: ip,
                 status: true,
                 use_ip: "",
                 type: "word_list",
-                text: result[i],
+                text: `${result[i]} ${shuffleArray(tag).slice(49, 53).map((row) => row.tag).join(' ')} #infinity_digital`,
                 update_at: {
                         $timestamp: {
                             "t": getTime + i,
@@ -122,7 +125,7 @@ const ModalForm = ({ setIp, setPopUp, ip, device }) => {
         const splitContent = splitArray(content, Number(kernel.thread.content))
         const splitWordlist = splitArray(arrVal, Math.ceil(arrVal.length / splitContent.length))
 
-        if (arrVal.length > 0 && (splitWordlist[0].length + (limit / 6  / content[0].limit)) < 1000) {
+        if (arrVal.length > 0 && (arrVal.length + (limit / 6  / content[0].limit)) < 1000) {
             try {
                 // update kernel settings
                 await updateData('device', { ip_address: ip }, kernel)
