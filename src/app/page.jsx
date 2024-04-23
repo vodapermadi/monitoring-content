@@ -31,7 +31,6 @@ export default function Home() {
         getData('device').then((res) => {
             setDevice(res)
         })
-
     }, [])
 
 

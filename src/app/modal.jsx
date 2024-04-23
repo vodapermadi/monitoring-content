@@ -1,5 +1,5 @@
 "use client"
-import { getData, postMany, shuffleArray, splitArray, updateData, wordRandom } from '@/utils/actions'
+import { getData, postData, postMany, shuffleArray, splitArray, updateData, wordRandom } from '@/utils/actions'
 import React, { useEffect, useState } from 'react'
 
 const ModalForm = ({ setIp, setPopUp, ip, device }) => {
@@ -60,6 +60,7 @@ const ModalForm = ({ setIp, setPopUp, ip, device }) => {
                 audio: formData.get('url'),
                 duration: parseInt(formData.get('duration')),
                 keyword: keyword[i].keyword,
+                // keyword:"belajar html",
                 time_limit: parseInt(formData.get('time_limit')),
                 limit: parseInt(formData.get('limit')),
                 min_duration: parseInt(formData.get('min_duration')),
@@ -106,7 +107,8 @@ const ModalForm = ({ setIp, setPopUp, ip, device }) => {
                 status: true,
                 use_ip: "",
                 type: "word_list",
-                text: `${result[i]} ${shuffleArray(tag).slice(49, 53).map((row) => row.tag).join(' ')} #infinity_digital`,
+                // text: `${result[i]} ${shuffleArray(tag).slice(49, 53).map((row) => row.tag).join(' ')} #infinity_digital`,
+                text:result[i],
                 update_at: {
                         $timestamp: {
                             "t": getTime + i,
@@ -140,6 +142,13 @@ const ModalForm = ({ setIp, setPopUp, ip, device }) => {
                         console.log("wordlist")
                     })
                 }
+
+                // await postData('history',{
+                //     ip:ip,
+                //     keyword: parseInt(limit / 6 / content[0].limit),
+                //     wordlist: parseInt(result.slice(0,limit).length),
+                //     list:result
+                // })
 
                 // alert for sum of data successfully
                 window.alert(`keyword = ${limit / 6 / content[0].limit}, wordlist = ${arrVal.length}, jumlah = ${arrVal.length + (limit / 6 / content[0].limit)}`)
