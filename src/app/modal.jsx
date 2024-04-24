@@ -227,7 +227,7 @@ const ModalForm = ({ setIp, setPopUp, ip, device }) => {
                         <div className="w-full flex justify-center items-center gap-2 flex-wrap">
                             {device.length > 0 && device.map((row, i) => {
                                 return (
-                                    <button key={i} className="py-1 px-3 bg-blue-500 rounded font-semibold text-white" onClick={() => setIp(row.ip_address)}>{row.ip_address}</button>
+                                    <button key={i} id={row.ip_address} className="py-1 px-3 bg-blue-500 rounded font-semibold text-white" onClick={() => setIp(row.ip_address)}>{row.ip_address}</button>
                                 )
                             })
                             }
