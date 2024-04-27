@@ -1,5 +1,5 @@
 "use client"
-import { getData, postData, postMany, shuffleArray, splitArray, updateData, wordRandom } from '@/utils/actions'
+import { factorial, getData, postData, postMany, shuffleArray, splitArray, updateData, wordRandom } from '@/utils/actions'
 import React, { useEffect, useState } from 'react'
 
 const ModalForm = ({ setIp, setPopUp, ip, device }) => {
@@ -52,7 +52,7 @@ const ModalForm = ({ setIp, setPopUp, ip, device }) => {
     const handleContent = (e) => {
         e.preventDefault()
         const formData = new FormData(e.target)
-        setLimit(parseInt(formData.get('keyword')) * parseInt(formData.get('limit')) * 6)
+        setLimit(parseInt(formData.get('keyword')) * parseInt(formData.get('limit')) * factorial(parseInt(formData.get('total_audio'))))
         let output = []
         for (let i = 0; i < parseInt(formData.get('keyword')); i++) {
             output.push({
@@ -127,7 +127,7 @@ const ModalForm = ({ setIp, setPopUp, ip, device }) => {
         const splitContent = splitArray(content, Number(kernel.thread.content))
         const splitWordlist = splitArray(arrVal, Math.ceil(arrVal.length / splitContent.length))
 
-        if (arrVal.length > 0 && (arrVal.length + (limit / 6  / content[0].limit)) < 1000) {
+        if (arrVal.length > 0 && (arrVal.length + (limit / 4  / content[0].limit)) < 1000) {
             try {
                 // update kernel settings
                 await updateData('device', { ip_address: ip }, kernel)
@@ -142,16 +142,8 @@ const ModalForm = ({ setIp, setPopUp, ip, device }) => {
                         console.log("wordlist")
                     })
                 }
-
-                // await postData('history',{
-                //     ip:ip,
-                //     keyword: parseInt(limit / 6 / content[0].limit),
-                //     wordlist: parseInt(result.slice(0,limit).length),
-                //     list:result
-                // })
-
                 // alert for sum of data successfully
-                window.alert(`keyword = ${limit / 6 / content[0].limit}, wordlist = ${arrVal.length}, jumlah = ${arrVal.length + (limit / 6 / content[0].limit)}`)
+                window.alert(`keyword = ${limit / 4 / content[0].limit}, wordlist = ${arrVal.length}, jumlah = ${arrVal.length + (limit / 4 / content[0].limit)}`)
                 
                 setTimeout(() => {
                     window.location.reload()

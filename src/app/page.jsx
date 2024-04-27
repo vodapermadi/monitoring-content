@@ -2,7 +2,7 @@
 
 import Datatable from "@/components/lib/datatable";
 import Title from "@/components/lib/title";
-import { getData, shuffleArray, wordRandom } from "@/utils/actions";
+import { getData, factorial } from "@/utils/actions";
 import { useEffect, useState } from "react";
 import ModalForm from "./modal";
 import getBrowserFingerprint from "get-browser-fingerprint";
@@ -13,9 +13,9 @@ export default function Home() {
     const [device, setDevice] = useState([])
     const [ip, setIp] = useState("")
     const [popUp, setPopUp] = useState(false)
-    
+
     useEffect(() => {
-        if(typeof window !== "undefined"){
+        if (typeof window !== "undefined") {
             const fingerprint = getBrowserFingerprint()
             console.log(fingerprint)
         }
@@ -33,11 +33,10 @@ export default function Home() {
         })
     }, [])
 
-
     return (
         <>
             {popUp && (
-                <ModalForm device={device} ip={ip} setIp={setIp} setPopUp={setPopUp}/>
+                <ModalForm device={device} ip={ip} setIp={setIp} setPopUp={setPopUp} />
             )}
             <div className="flex justify-center items-center flex-col gap-6">
 
