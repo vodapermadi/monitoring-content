@@ -52,7 +52,7 @@ const ModalForm = ({ setIp, setPopUp, ip, device }) => {
     const handleContent = (e) => {
         e.preventDefault()
         const formData = new FormData(e.target)
-        setLimit(parseInt(formData.get('keyword')) * parseInt(formData.get('limit')) * factorial(parseInt(formData.get('total_audio'))))
+        setLimit(parseInt(formData.get('keyword')) * parseInt(formData.get('limit')) * 6)
         let output = []
         for (let i = 0; i < parseInt(formData.get('keyword')); i++) {
             output.push({
@@ -60,7 +60,6 @@ const ModalForm = ({ setIp, setPopUp, ip, device }) => {
                 audio: formData.get('url'),
                 duration: parseInt(formData.get('duration')),
                 keyword: keyword[i].keyword,
-                // keyword:"belajar html",
                 time_limit: parseInt(formData.get('time_limit')),
                 limit: parseInt(formData.get('limit')),
                 min_duration: parseInt(formData.get('min_duration')),
@@ -127,7 +126,7 @@ const ModalForm = ({ setIp, setPopUp, ip, device }) => {
         const splitContent = splitArray(content, Number(kernel.thread.content))
         const splitWordlist = splitArray(arrVal, Math.ceil(arrVal.length / splitContent.length))
 
-        if (arrVal.length > 0 && (arrVal.length + (limit / 4  / content[0].limit)) < 1000) {
+        if (arrVal.length > 0 && (arrVal.length + (limit / 6  / content[0].limit)) < 1000) {
             try {
                 // update kernel settings
                 await updateData('device', { ip_address: ip }, kernel)
@@ -143,7 +142,7 @@ const ModalForm = ({ setIp, setPopUp, ip, device }) => {
                     })
                 }
                 // alert for sum of data successfully
-                window.alert(`keyword = ${limit / 4 / content[0].limit}, wordlist = ${arrVal.length}, jumlah = ${arrVal.length + (limit / 4 / content[0].limit)}`)
+                window.alert(`keyword = ${limit / 6 / content[0].limit}, wordlist = ${arrVal.length}, jumlah = ${arrVal.length + (limit / 6 / content[0].limit)}`)
                 
                 setTimeout(() => {
                     window.location.reload()
